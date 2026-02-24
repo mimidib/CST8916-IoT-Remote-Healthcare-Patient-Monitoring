@@ -3,10 +3,8 @@
 | | |
 |---|---|
 | **Semester** | Winter 2026 |
-| **Release Date** | February 16, 2026 (Week 6) |
-| **Due Date** | February 27, 2026 at 11:59 PM (Week 7) |
-| **Weight** | 15% of final grade |
-| **Students** | Jingjing Duan, Iylas Zazai, Mimi Dib |
+| **Release Date** | February 16, 2026 |
+| **Authors** | Jingjing Duan, Iylas Zazai, Mimi Dib |
 
 ---
 
