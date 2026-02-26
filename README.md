@@ -67,16 +67,16 @@ Examples of REST usage in this system include:
 Typical REST endpoints may include:
 
 * POST /patients
-→ Create a new patient record in the system.
+→ Create a new patient resource in the system database.
 
 * GET /patients/{id}
-→ Retrieve detailed information about a specific patient.
+→ Retrieve the profile and details of a specific patient by ID.
 
 * GET /patients/{id}/vitals
-→ Retrieve the historical vital signs of a specific patient.
+→ Retrieve the historical and recorded vital sign data (e.g., heart rate, oxygen level) for a specific patient.
 
 * POST /alerts/{id}/ack
-→ Acknowledge a specific alert (for example, when a doctor confirms it has been reviewed).
+→ Update the status of a specific alert to indicate it has been acknowledged by an authorized user.
 
 REST provides a simple and predictable structure, making it suitable for administrative tasks and CRUD operations.
 
