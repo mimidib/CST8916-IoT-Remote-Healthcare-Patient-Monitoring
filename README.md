@@ -18,10 +18,17 @@ This report analyzes a conceptual remote data and real-time application solution
 *Explain how both REST and GraphQL could be used to handle the data requests and updates required by the system.*
 
 ## 2. WebSockets for Real-time Communication
-*Describe how WebSockets could be used to handle real-time communication in your chosen system.*
 
-Server needs to push updates to the user frequently WebSocket
-Real-time, bidirectional communication needed WebSocket
+Websockets integrate with HTTP to establish a full-duplex communication system, where both the client and server openly send and receive updates without the need to establish a new connection with repeated handshakes. The connection is persistent and maintained until one party closes it.
+
+**What does this solve?**  
+Websockets allow for immediate updates and action.  
+If we are monitoring a critical system such patients vitals, we want to know the exact moment an abnormality occurs and our attention is needed.  
+Websockets reduces latency by removing the need for multiple requests, and acts as an open tunnel for data updates of the patients vitals, as well as any instructions or commands sent to the IoT devices to improve data ingestion, similar to a telephone call.
+
+This allows us to alert and act on abnormalities immediately, potentially saving someones life in the process. 
+
+Outside of emergencies, Websockets give us real-time dashboards for doctors and nurses to review and act on using their expertise, without delay.
 
 ## 3. Technology Recommendation and Justification
 Use Case: Healthcare Remote Patient Monitoring (IoT-based)
@@ -38,9 +45,9 @@ This combination is appropriate for healthcare monitoring because it balances si
 
 #### 1) Reasoning of WebSockets for real-time vitals and alerts
 Remote monitoring needs the system to push updates instantly (updates vitals, abnormal readings, critical alerts). If the dashboard only used REST/GraphQL polling, clients would often send requests, which would increase cost and delay (especially under high load) With WebSockets, the server maintains a constant connection and can push updates instantly:
-- live vitals updates (e.g., heart rate, SpO₂).
-- alert notifications when parameters are exceeded.
-- device status changes (online/offline, battery low).
+- Live vitals updates (e.g., heart rate, SpO₂).
+- Alert notifications when parameters are exceeded.
+- Device status changes (online/offline, battery low).
 - Using a managed real-time layer such as Azure SignalR also helps handle scale (many coinciding clinicians/devices) without running and scaling WebSocket servers manually.
 
 #### 2) Reasoning of REST for management workflows
@@ -102,7 +109,7 @@ graph TD
 
         subgraph "Databases"
             D["Azure SQL Database (Patient/Device)"]
-            F["Azure Time Series Insights"]
+            F["Azure Data Explorer (Analytical Store)"]
         end
 
         subgraph "IoT Processing"
