@@ -15,7 +15,57 @@
 This report analyzes a conceptual remote data and real-time application solution used to monitor healthcare patients using IoT wearable device sensor management, real time data dashboards and alerts. 
 
 ## 1. REST and GraphQL for Data Requests and Updates
-*Explain how both REST and GraphQL could be used to handle the data requests and updates required by the system.*
+In this system, both REST and GraphQL are used to handle different types of data requests and updates.
+
+**REST API**
+
+REST is used for resource management and standard operations. It is well-suited for clear, structured actions such as creating, updating, or retrieving specific resources.
+
+Examples of REST usage in this system include:
+* Registering and managing patients
+* Assigning devices to patients
+* Retrieving historical vital records
+* Acknowledging alerts
+* Updating patient or device information
+
+Typical REST endpoints may include:
+* POST /patients → Create a new patient resource in the system database.
+* GET /patients/{id} → Retrieve the profile and details of a specific patient by ID.
+* GET /patients/{id}/vitals → Retrieve the historical and recorded vital sign data (e.g., heart rate, oxygen level) for a specific patient.
+
+REST provides a simple and predictable structure, making it suitable for administrative tasks and CRUD operations.
+
+**GraphQL API**
+
+GraphQL is used for flexible and efficient data retrieval, especially for dashboard views.
+
+In a healthcare monitoring system, the doctor dashboard may need:
+
+* Patient profile information
+* Latest vital readings
+* Active alerts
+* Device status
+
+Instead of making multiple REST calls, GraphQL allows the client to request all required data in a single query.
+
+For example, one GraphQL query can return:
+* A list of assigned patients
+* Each patient’s latest heart rate and oxygen level
+* Any active alerts
+
+GraphQL reduces over-fetching and under-fetching of data and provides greater flexibility for frontend applications.
+
+**Design Decision**
+
+In this architecture:
+
+REST is primarily used for structured management operations.
+
+GraphQL is used for complex dashboard data queries.
+
+Together, they provide a balanced approach between simplicity and flexibility.
+
+This combination ensures efficient data handling while maintaining clear system structure.
 
 ## 2. WebSockets for Real-time Communication
 
@@ -150,6 +200,6 @@ graph TD
 
 ## Contribution Statement
 
-- Jingjing
+- Jingjing: REST and GraphQL for Data Requests and Updates (Section 1)
 - Ilyas: Technology Recommendation and Justification + healthcare security considerations (Section 3)
 - Mimi: Architectural Diagram, WebSockets for Real-time Communication report (Sections 2 & 4)
