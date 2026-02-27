@@ -9,7 +9,7 @@
 
 ---
 
-[Watch Our Presentation Video!](https://)
+[Watch Our Presentation Video!](https://youtu.be/-h8HnuVs2qw)
 
 ## Overview
 This report analyzes a conceptual remote data and real-time application solution used to monitor healthcare patients using IoT wearable device sensor management, real time data dashboards and alerts. 
