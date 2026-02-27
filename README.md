@@ -72,13 +72,41 @@ This combination ensures efficient data handling while maintaining clear system 
 Websockets integrate with HTTP to establish a full-duplex communication system, where both the client and server openly send and receive updates without the need to establish a new connection with repeated handshakes. The connection is persistent and maintained until one party closes it.
 
 **What does this solve?**  
-Websockets allow for immediate updates and action.  
-If we are monitoring a critical system such patients vitals, we want to know the exact moment an abnormality occurs and our attention is needed.  
-Websockets reduces latency by removing the need for multiple requests, and acts as an open tunnel for data updates of the patients vitals, as well as any instructions or commands sent to the IoT devices to improve data ingestion, similar to a telephone call.
+Websockets allow for immediate updates to our live dashboards and action for emergencies. If we are monitoring a critical system such live streaming of sensor data (e.g., continuous heart rate) and other patients vitals, we require low-latency communication to know the exact moment an abnormality occurs and our attention is needed. 
 
+Websockets reduces latency by removing the need for multiple requests, acting as an open tunnel for data updates of the patients vitals, as well as any instructions or commands sent to the IoT devices to improve data ingestion, similar to a telephone call.
 This allows us to alert and act on abnormalities immediately, potentially saving someones life in the process. 
 
-Outside of emergencies, Websockets give us real-time dashboards for doctors and nurses to review and act on using their expertise, without delay.
+### 2.1 How Websockets Are Implemented
+Our system leverages Azure SignalR Service to implement WebSockets. It is a fully managed WebSocket server that handles connection scaling, authentication, and message broadcasting to ensure thousands of concurrent devices and clients receive updates in an instant with minimal latency.
+
+**Data Flow Example**
+1. **Live Data Stream:** Wearable IoT device records and sends telemetry data on heart rate, body temperature, etc to Azure IoT Hub where the data will be processed in the pipeline:
+    - IoT Hub ingests device data
+    - Azure Stream Analytics does real-time data processing 
+    - For immediate visualization the processed data is sent through the Alert Engine, and to Azure SignalR thats broadcasted to subscribed clients (using persistent, encrypted WSS WebSocket Connection) to update the Web Dashboard and Mobile App
+2. **Live Critical Alerting:** The Azure Funcitons Alert Engine the processed data was passed through is used to evaluate all incoming data, and alert on any abnormalities, evaluated against predefined thresholds:
+    - Any abnormal vital signs or device malfunction = alert trigger
+    - Alert is pushed instantly via Azure SignalR WebSocket server to clients 
+    - Both Mobile app and Web Dashboard receive the alert immediately
+Example: If a patients blood sugar vitals drop dangerously low, Azure Functions Alert engine evaluates this and recognizes the abnormality, sending the alert notfiication immediately using WebSockets to the Web Dashboard and Mobile app for Doctors and Nurses rapid intervention.
+3. **Dashboard Sync:** Multiple App users can monitor the same client, and with the real-time data updates with WebSockets, they all see the same data. 
+    - Any actions like alert acknowledgement, or updates will be broadcasted to all web/mobile users.
+    - This ensures user-wide consistent understanding of patients vital states. 
+
+**Websocket Connections**
+How Azure SignalR Websocket Server connects to the Web Dashboard and Mobile app clients is using TLS encrypted WS protocol, WSS. The flow acts as follows:
+1. **Initial Handshake & Upgrade Request:** Client Web Dashboard/Mobile App begins with an HTTPs negotiation, requesting to upgrade the connection to WSS protocol if the server allows using special headers (still HTTPS here):
+    - `Upgrade: websocket`
+    - `Connection: Upgrade`
+    - `Sec-WebSocket-Key:` (Randomly generated key)
+    - `Sec-WebSocket-Version: 13`
+2. **Upgrade Protocol Request:** Azure SignalR permits WebSocket connections and returns the request with HTTP status `101` describing `Switching Protocols` (or of the like) with the following headers:
+    - `Upgrade: websocket`
+    - `Connection: Upgrade`
+    - `Sec-WebSocket-Accept:`(a hashed value of the client key)
+3. **Full-Duplex Data Frame Communicaiton:** Client Web Dashboard/Mobile App opens a persistent connection with Azure SignalR Server, allowing for two-way data communications, breaking the live processed data into smaller, manageable pieces (frames).
+4. **Connection Closed:** When either Client or Server close the connection sending a "Close" control frame, the receiver responds with a "Close" frame acknowledgement where the TCP connection is gracefully terminated from both sides.
 
 ## 3. Technology Recommendation and Justification
 Use Case: Healthcare Remote Patient Monitoring (IoT-based)
@@ -154,7 +182,7 @@ graph TD
         subgraph "API Layer"
             C["REST API (Azure App Service)"]
             E["GraphQL API (Azure Functions)"]
-            G["Azure SignalR Service"]
+            G["Azure SignalR Service (Websocket Server)"]
         end
 
         subgraph "Databases"
@@ -168,26 +196,26 @@ graph TD
             J["Azure Functions (Alert Engine)"]
         end
 
-        K[Wearable IoT Devices] --> H
+        K[Wearable IoT Devices] -->|"Device telemetry"| H
 
-        H --> I
-        I --> F
-        I --> J
-        J --> G
+        H -->|"Stream device data"| I
+        I -->|"Store analytical data"| F
+        I -->|"Trigger alert rules"| J
+        J -->|"Send real‑time alerts"| G
 
-        C --> D
-        E --> D
-        E --> F
+        C -->|"CRUD operations"| D
+        E -->|"Query patient/device data"| D
+        E -->|"Query analytical data"| F
 
-        A --> C
-        A --> E
-        A --> G
-        B --> C
-        B --> E
-        B --> G
+        A -->|"REST API calls"| C
+        A -->|"GraphQL queries"| E
+        A -->|"Subscribe to updates"| G
+        B -->|"REST API calls"| C
+        B -->|"GraphQL queries"| E
+        B -->|"Subscribe to updates"| G
 
-        G --> A
-        G --> B
+        G -->|"Push real‑time updates"| A
+        G -->|"Push real‑time updates"| B
     end
 ```
 **Data Flow**
