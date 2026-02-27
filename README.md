@@ -169,8 +169,6 @@ Security is a key justification because the system handles highly sensitive pati
 
 
 ## 4. System Architecture Diagram
-*Create a diagram that illustrates the overall architecture of your system, showing how clients, APIs (REST and/or GraphQL), WebSockets, and backend services connect and interact. You may use any diagramming tool (e.g., draw.io, Lucidchart, Excalidraw, Mermaid) and include the diagram as an image in your report.*
-
 ```mermaid
 graph TD
     subgraph "Clients"
