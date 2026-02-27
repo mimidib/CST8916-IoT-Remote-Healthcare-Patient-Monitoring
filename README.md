@@ -69,44 +69,43 @@ This combination ensures efficient data handling while maintaining clear system 
 
 ## 2. WebSockets for Real-time Communication
 
-Websockets integrate with HTTP to establish a full-duplex communication system, where both the client and server openly send and receive updates without the need to establish a new connection with repeated handshakes. The connection is persistent and maintained until one party closes it.
+WebSockets integrate with HTTP to establish a full-duplex communication system, where both the client and server openly send and receive updates without the need to establish a new connection with repeated handshakes. The connection is persistent and maintained until one party closes it.
 
 **What does this solve?**  
-Websockets allow for immediate updates to our live dashboards and action for emergencies. If we are monitoring a critical system such live streaming of sensor data (e.g., continuous heart rate) and other patients vitals, we require low-latency communication to know the exact moment an abnormality occurs and our attention is needed. 
+WebSockets allow for immediate updates to our live dashboards and action for emergencies. If we are monitoring a critical system such as live streaming of sensor data (e.g., continuous heart rate), we require low-latency communication to know the exact moment an abnormality occurs and our attention is needed. 
 
-Websockets reduces latency by removing the need for multiple requests, acting as an open tunnel for data updates of the patients vitals, as well as any instructions or commands sent to the IoT devices to improve data ingestion, similar to a telephone call.
-This allows us to alert and act on abnormalities immediately, potentially saving someones life in the process. 
+WebSockets reduce latency by removing the need for multiple requests, acting as an open tunnel for data updates of the patient vitals, as well as any instructions or commands sent to the IoT devices to improve data ingestion, similar to a telephone call. This allows us to alert and act on abnormalities immediately, potentially saving someone's life in the process. 
 
-### 2.1 How Websockets Are Implemented
+### 2.1 How WebSockets Are Implemented
 Our system leverages Azure SignalR Service to implement WebSockets. It is a fully managed WebSocket server that handles connection scaling, authentication, and message broadcasting to ensure thousands of concurrent devices and clients receive updates in an instant with minimal latency.
 
 **Data Flow Example**
-1. **Live Data Stream:** Wearable IoT device records and sends telemetry data on heart rate, body temperature, etc to Azure IoT Hub where the data will be processed in the pipeline:
+1. **Live Data Stream:** Wearable IoT device records and sends telemetry data on heart rate, body temperature, etc., to Azure IoT Hub where the data will be processed in the pipeline:
     - IoT Hub ingests device data
     - Azure Stream Analytics does real-time data processing 
-    - For immediate visualization the processed data is sent through the Alert Engine, and to Azure SignalR thats broadcasted to subscribed clients (using persistent, encrypted WSS WebSocket Connection) to update the Web Dashboard and Mobile App
-2. **Live Critical Alerting:** The Azure Funcitons Alert Engine the processed data was passed through is used to evaluate all incoming data, and alert on any abnormalities, evaluated against predefined thresholds:
+    - For immediate visualization, the processed data is sent through the Alert Engine, and to Azure SignalR, which broadcasts it to subscribed clients (using persistent, encrypted WSS WebSocket connection) to update the Web Dashboard and Mobile App.
+2. **Live Critical Alerting:** The Azure Functions Alert Engine that the processed data was passed through is used to evaluate all incoming data and alert on any abnormalities, evaluated against predefined thresholds:
     - Any abnormal vital signs or device malfunction = alert trigger
     - Alert is pushed instantly via Azure SignalR WebSocket server to clients 
-    - Both Mobile app and Web Dashboard receive the alert immediately
-Example: If a patients blood sugar vitals drop dangerously low, Azure Functions Alert engine evaluates this and recognizes the abnormality, sending the alert notfiication immediately using WebSockets to the Web Dashboard and Mobile app for Doctors and Nurses rapid intervention.
-3. **Dashboard Sync:** Multiple App users can monitor the same client, and with the real-time data updates with WebSockets, they all see the same data. 
-    - Any actions like alert acknowledgement, or updates will be broadcasted to all web/mobile users.
-    - This ensures user-wide consistent understanding of patients vital states. 
+    - Both Mobile app and Web Dashboard receive the alert immediately.
+   **Example:** If a patient's blood sugar vitals drop dangerously low, the Azure Functions Alert Engine evaluates this and recognizes the abnormality, sending the alert notification immediately using WebSockets to the Web Dashboard and Mobile app for doctors and nurses' rapid intervention.
+3. **Dashboard Sync:** Multiple app users can monitor the same client, and with the real-time data updates via WebSockets, they all see the same data. 
+    - Any actions like alert acknowledgement or updates will be broadcasted to all web/mobile users.
+    - This ensures user-wide consistent understanding of patients' vital states. 
 
-**Websocket Connections**
-How Azure SignalR Websocket Server connects to the Web Dashboard and Mobile app clients is using TLS encrypted WS protocol, WSS. The flow acts as follows:
-1. **Initial Handshake & Upgrade Request:** Client Web Dashboard/Mobile App begins with an HTTPs negotiation, requesting to upgrade the connection to WSS protocol if the server allows using special headers (still HTTPS here):
+**WebSocket Connections**
+How Azure SignalR WebSocket Server connects to the Web Dashboard and Mobile app clients is using TLS encrypted WS protocol, WSS. The flow acts as follows:
+1. **Initial Handshake & Upgrade Request:** Client Web Dashboard/Mobile App begins with an HTTPS negotiation, requesting to upgrade the connection to WSS protocol if the server allows, using special headers (still HTTPS here):
     - `Upgrade: websocket`
     - `Connection: Upgrade`
-    - `Sec-WebSocket-Key:` (Randomly generated key)
+    - `Sec-WebSocket-Key:` (randomly generated key)
     - `Sec-WebSocket-Version: 13`
-2. **Upgrade Protocol Request:** Azure SignalR permits WebSocket connections and returns the request with HTTP status `101` describing `Switching Protocols` (or of the like) with the following headers:
+2. **Upgrade Protocol Response:** Azure SignalR permits WebSocket connections and returns the request with HTTP status `101` describing `Switching Protocols` (or the like) with the following headers:
     - `Upgrade: websocket`
     - `Connection: Upgrade`
-    - `Sec-WebSocket-Accept:`(a hashed value of the client key)
-3. **Full-Duplex Data Frame Communicaiton:** Client Web Dashboard/Mobile App opens a persistent connection with Azure SignalR Server, allowing for two-way data communications, breaking the live processed data into smaller, manageable pieces (frames).
-4. **Connection Closed:** When either Client or Server close the connection sending a "Close" control frame, the receiver responds with a "Close" frame acknowledgement where the TCP connection is gracefully terminated from both sides.
+    - `Sec-WebSocket-Accept:` (a hashed value of the client key)
+3. **Full-Duplex Data Frame Communication:** Client Web Dashboard/Mobile App opens a persistent connection with Azure SignalR Server, allowing for two-way data communications, breaking the live processed data into smaller, manageable pieces (frames).
+4. **Connection Closed:** When either client or server closes the connection by sending a "Close" control frame, the receiver responds with a "Close" frame acknowledgement, and the TCP connection is gracefully terminated from both sides.
 
 ## 3. Technology Recommendation and Justification
 Use Case: Healthcare Remote Patient Monitoring (IoT-based)
@@ -217,12 +216,12 @@ graph TD
     end
 ```
 **Data Flow**
-- Device data ingestion: Wearables send telemetry to Azure IoT Hub. The stream processor validates and stores data in the time‑series database.
-- Alerting: The alert engine checks for abnormal values; if found, it triggers a message via the WebSocket server.
-- Management APIs: REST endpoints allow staff to register patients and devices (stored in relational DB).
-- Dashboard queries: GraphQL fetches combined data from relational and time‑series databases.
-- Real‑time updates: WebSocket pushes alerts and live readings to subscribed clients.
-
+- **Device Data Ingestion:** Wearable IoT devices stream telemetry data, e.g., heart rate, temperature, etc., to Azure IoT Hub, which acts as the cloud entry point for all device messages.
+- **Stream Processing:** Azure Stream Analytics consumes the incoming data in real-time, performing initial validation and routing. The processed telemetry is then sent to Azure Data Explorer for time-series data storage.
+- **Alert Detection:** Azure Functions Alert Engine evaluates the processed data from Stream Analytics against historical and predefined thresholds to identify abnormalities such as irregular temperature or blood sugar levels. When detected, it immediately sends a push notification to Azure SignalR Service.
+- **Data Management:** Staff use underlying REST API endpoints to perform CRUD operations on patients and devices, with all data stored in Azure SQL Database as a relational patient and device registry.
+- **Unified Queries:** GraphQL API enables flexible queries that combine relational data from SQL Database with time-series data from Data Explorer. This allows dashboards to fetch exactly the data they need for visualizing relationships between patients and their relevant time-based data—eliminating both over-fetching and under-fetching. Since these dashboards handle large datasets and require significant bandwidth, this approach reduces the demand on underlying infrastructure.
+- **Real-Time Data Transfer:** Connected clients—both Web Dashboard and Mobile App—maintain a persistent, full-duplex connection to Azure SignalR Service. This enables real-time server-to-client alerts for patient vital abnormalities, as well as client-to-server data transfer for alert acknowledgments.
 
 ## Contribution Statement
 
