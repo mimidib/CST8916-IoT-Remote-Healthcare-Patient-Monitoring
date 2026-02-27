@@ -24,7 +24,26 @@ Server needs to push updates to the user frequently WebSocket
 Real-time, bidirectional communication needed WebSocket
 
 ## 3. Technology Recommendation and Justification
-*Recommend which technology (or combination of technologies) you would choose for your system and justify your recommendation based on your analysis in Sections 1 and 2.*
+### 3.1 Recommendation
+For the Healthcare Remote Patient Monitoring system, I recommend a **hybrid approach**:
+
+- **REST** for **patient/device management**
+- **GraphQL** for **dashboard data queries**
+- **WebSockets (WSS)** for **real-time vitals updates and alerts**
+
+### 3.2 Justification
+
+### 1) WebSockets are essential for real-time vitals + alerts
+
+
+### 2) REST is best for “management” workflows
+
+
+### 3) GraphQL is best for dashboards that need combined data
+
+
+### 4) The backend pipeline supports scalability and reliability
+
 
 ## 4. System Architecture Diagram
 *Create a diagram that illustrates the overall architecture of your system, showing how clients, APIs (REST and/or GraphQL), WebSockets, and backend services connect and interact. You may use any diagramming tool (e.g., draw.io, Lucidchart, Excalidraw, Mermaid) and include the diagram as an image in your report.*
