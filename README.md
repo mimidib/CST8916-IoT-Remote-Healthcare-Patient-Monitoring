@@ -193,6 +193,6 @@ graph TD
 
 ## Contribution Statement
 
-- Jingjing
+- Jingjing: REST and GraphQL for Data Requests and Updates (Section 1)
 - Ilyas: Technology Recommendation and Justification + healthcare security considerations (Section 3)
 - Mimi: Architectural Diagram, WebSockets for Real-time Communication report (Sections 2 & 4)
