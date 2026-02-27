@@ -4,7 +4,7 @@
 |---|---|
 | **Semester** | Winter 2026 |
 | **Release Date** | February 16, 2026 |
-| **Authors** | Jingjing Duan, Iylas Zazai, Mimi Dib |
+| **Authors** | Jingjing Duan, Ilyas Zazai, Mimi Dib |
 | **Case** | #4 - Real-time IoT Monitoring System (Healthcare) |
 
 ---
