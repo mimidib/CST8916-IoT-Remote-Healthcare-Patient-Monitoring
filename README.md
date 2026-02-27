@@ -32,6 +32,7 @@ Typical REST endpoints may include:
 * POST /patients → Create a new patient resource in the system database.
 * GET /patients/{id} → Retrieve the profile and details of a specific patient by ID.
 * GET /patients/{id}/vitals → Retrieve the historical and recorded vital sign data (e.g., heart rate, oxygen level) for a specific patient.
+* POST /alerts/{id}/ack  → is used when a doctor confirms that an alert has been reviewed.
 
 REST provides a simple and predictable structure, making it suitable for administrative tasks and CRUD operations.
 
@@ -54,18 +55,6 @@ For example, one GraphQL query can return:
 * Any active alerts
 
 GraphQL reduces over-fetching and under-fetching of data and provides greater flexibility for frontend applications.
-
-**Design Decision**
-
-In this architecture:
-
-REST is primarily used for structured management operations.
-
-GraphQL is used for complex dashboard data queries.
-
-Together, they provide a balanced approach between simplicity and flexibility.
-
-This combination ensures efficient data handling while maintaining clear system structure.
 
 ## 2. WebSockets for Real-time Communication
 
